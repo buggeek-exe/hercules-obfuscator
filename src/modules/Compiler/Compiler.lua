@@ -2472,6 +2472,10 @@ function luaY:assignment(ls, lh, nvars)
 		self:checklimit(ls.fs, nvars, self.LUAI_MAXCCALLS - ls.L.nCcalls, "variables in assignment")
 		self:assignment(ls, nv, nvars + 1)
 	else
+		-- Check for common error case: trying to assign to an expression like a-b
+		if ls.t.token == "-" or ls.t.token == "+" or ls.t.token == "*" or ls.t.token == "/" or ls.t.token == "%" or ls.t.token == "^" then
+			luaX:syntaxerror(ls, "syntax error (cannot assign to expression)")
+		end
 		self:checknext(ls, "=")
 		local nexps = self:explist1(ls, e)
 		if nexps ~= nvars then
