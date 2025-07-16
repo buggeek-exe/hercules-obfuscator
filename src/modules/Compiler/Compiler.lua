@@ -2715,8 +2715,14 @@ function luaY:exprstat(ls)
 	if v.v.k == "VCALL" then
 		luaP:SETARG_C(luaK:getcode(fs, v.v), 1)
 	else
-		v.prev = nil;
-		self:assignment(ls, v, 1)
+		-- Check if this is actually an assignment (next token should be '=' or ',')
+		if ls.t.token == "=" or ls.t.token == "," then
+			v.prev = nil;
+			self:assignment(ls, v, 1)
+		else
+			-- Not an assignment, this is an invalid expression statement
+			luaX:syntaxerror(ls, "syntax error")
+		end
 	end
 end;
 function luaY:retstat(ls)
